@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100 Day Challenge Tracker</title>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #fafafa;
+      color: #111827;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 6px;
+      letter-spacing: -0.025em;
+    }
+
+    .header .progress-text {
+      font-size: 1rem;
+      color: #6b7280;
+      font-weight: 400;
+    }
+
+    .settings-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+
+    .settings-btn:hover {
+      background: #f3f4f6;
+    }
+
+    /* Daily Check-in View */
+    .daily-view {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    .daily-view .day-info {
+      margin-bottom: 36px;
+    }
+
+    .daily-view .day-number {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .daily-view .day-date {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #111827;
+      letter-spacing: -0.025em;
+    }
+
+    .check-btn {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      border: 4px solid #e5e7eb;
+      background: #ffffff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      transition: all 0.25s ease;
+      font-size: 3.5rem;
+    }
+
+    .check-btn:hover {
+      border-color: #22c55e;
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px -5px rgba(34, 197, 94, 0.3);
+    }
+
+    .check-btn.checked {
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-color: #22c55e;
+      color: #ffffff;
+      box-shadow: 0 8px 25px -5px rgba(34, 197, 94, 0.4);
+    }
+
+    .check-btn.checked:hover {
+      background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+      border-color: #16a34a;
+    }
+
+    .streak-display {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #f59e0b;
+      margin-bottom: 24px;
+      min-height: 1.5em;
+    }
+
+    .streak-display:empty {
+      display: none;
+    }
+
+    .view-progress-btn {
+      background: none;
+      border: 2px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 12px 24px;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .view-progress-btn:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    /* Full Progress View */
+    .progress-view {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      padding: 28px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .progress-streak {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #f59e0b;
+    }
+
+    .export-btn {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 14px -3px rgba(59, 130, 246, 0.4);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px -3px rgba(59, 130, 246, 0.5);
+    }
+
+    .month-grid {
+      display: flex;
+      gap: 32px;
+      overflow-x: auto;
+      padding-bottom: 12px;
+    }
+
+    .month-column {
+      min-width: 90px;
+      flex-shrink: 0;
+    }
+
+    .month-header {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #111827;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e5e7eb;
+      letter-spacing: -0.01em;
+    }
+
+    .day-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 3px;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-size: 0.95rem;
+    }
+
+    .day-row.past, .day-row.today {
+      font-weight: 600;
+    }
+
+    .day-row.past:hover, .day-row.today:hover {
+      background: #f3f4f6;
+      transform: translateX(2px);
+    }
+
+    .day-row.today {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border: 2px solid #3b82f6;
+    }
+
+    .day-row.today:hover {
+      background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    }
+
+    .day-row.future {
+      color: #9ca3af;
+      cursor: default;
+      font-weight: 400;
+    }
+
+    .day-row .day-num {
+      width: 32px;
+    }
+
+    .day-row .checkmark {
+      color: #22c55e;
+      margin-left: auto;
+      font-weight: 700;
+    }
+
+    .progress-footer {
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .progress-stats {
+      font-size: 1rem;
+      color: #6b7280;
+      font-weight: 500;
+    }
+
+    .back-btn {
+      background: none;
+      border: 2px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+      border-color: #3b82f6;
+      color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    /* Setup Screen */
+    .setup-screen {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      padding: 48px 32px;
+      max-width: 420px;
+      margin: 40px auto;
+    }
+
+    .setup-screen h2 {
+      text-align: center;
+      margin-bottom: 8px;
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .setup-screen .subtitle {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 36px;
+      font-size: 1.05rem;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .start-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: #ffffff;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 12px;
+      box-shadow: 0 4px 14px -3px rgba(59, 130, 246, 0.4);
+    }
+
+    .start-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px -3px rgba(59, 130, 246, 0.5);
+    }
+
+    /* Settings Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.25rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+      padding: 4px;
+    }
+
+    .close-btn:hover {
+      color: #111827;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .save-settings-btn {
+      width: 100%;
+      background: #3b82f6;
+      color: #ffffff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+
+    .save-settings-btn:hover {
+      background: #2563eb;
+    }
+
+    .reset-btn {
+      width: 100%;
+      background: none;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .reset-btn:hover {
+      background: #fef2f2;
+    }
+
+    /* Export Container (hidden, used for image generation) */
+    .export-container {
+      position: absolute;
+      left: -9999px;
+      background: #ffffff;
+      padding: 40px;
+      width: 800px;
+    }
+
+    .export-container .export-title {
+      text-align: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.025em;
+    }
+
+    .export-container .export-progress {
+      text-align: center;
+      color: #6b7280;
+      margin-bottom: 8px;
+      font-size: 1.05rem;
+    }
+
+    .export-container .export-streak {
+      text-align: center;
+      color: #f59e0b;
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 28px;
+    }
+
+    .export-container .export-footer {
+      text-align: center;
+      color: #9ca3af;
+      font-size: 0.9rem;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    /* Hidden utility */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        padding: 16px;
+      }
+
+      .header h1 {
+        font-size: 1.25rem;
+        padding-right: 40px;
+      }
+
+      .daily-view {
+        padding: 30px 16px;
+      }
+
+      .check-btn {
+        width: 100px;
+        height: 100px;
+        font-size: 2.5rem;
+      }
+
+      .month-grid {
+        gap: 16px;
+      }
+
+      .month-column {
+        min-width: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Setup Screen -->
+    <div id="setup-screen" class="setup-screen hidden">
+      <h2>Start Your Challenge</h2>
+      <p class="subtitle">Track your daily progress toward any goal</p>
+
+      <div class="form-group">
+        <label for="setup-name">Your Name</label>
+        <input type="text" id="setup-name" placeholder="e.g., Dale">
+      </div>
+
+      <div class="form-group">
+        <label for="setup-challenge">Challenge Name</label>
+        <input type="text" id="setup-challenge" placeholder="e.g., Reading Challenge">
+      </div>
+
+      <div class="form-group">
+        <label for="setup-days">Number of Days</label>
+        <input type="number" id="setup-days" value="100" min="1" max="365">
+      </div>
+
+      <div class="form-group">
+        <label for="setup-start">Start Date</label>
+        <input type="date" id="setup-start">
+      </div>
+
+      <button class="start-btn" onclick="startChallenge()">Start Tracking</button>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" class="hidden">
+      <header class="header">
+        <h1 id="app-title"></h1>
+        <p class="progress-text" id="progress-text"></p>
+        <button class="settings-btn" onclick="openSettings()" aria-label="Settings">⚙️</button>
+      </header>
+
+      <!-- Daily Check-in View -->
+      <div id="daily-view" class="daily-view">
+        <div class="day-info">
+          <div class="day-number" id="daily-day-number"></div>
+          <div class="day-date" id="daily-day-date"></div>
+        </div>
+
+        <button class="check-btn" id="check-btn" onclick="toggleCheck()">
+          <span id="check-icon"></span>
+        </button>
+
+        <div class="streak-display" id="daily-streak"></div>
+
+        <button class="view-progress-btn" onclick="showProgressView()">View Full Progress</button>
+      </div>
+
+      <!-- Full Progress View -->
+      <div id="progress-view" class="progress-view hidden">
+        <div class="progress-header">
+          <span class="progress-streak" id="progress-streak"></span>
+          <button class="export-btn" onclick="exportImage()">
+            <span>📸</span> Export Image
+          </button>
+        </div>
+
+        <div class="month-grid" id="month-grid"></div>
+
+        <div class="progress-footer">
+          <span class="progress-stats" id="progress-stats"></span>
+          <button class="back-btn" onclick="showDailyView()">← Back to Today</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal-overlay hidden" onclick="closeSettingsOnOverlay(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Settings</h3>
+          <button class="close-btn" onclick="closeSettings()">×</button>
+        </div>
+
+        <div class="form-group">
+          <label for="settings-name">Your Name</label>
+          <input type="text" id="settings-name">
+        </div>
+
+        <div class="form-group">
+          <label for="settings-challenge">Challenge Name</label>
+          <input type="text" id="settings-challenge">
+        </div>
+
+        <div class="form-group">
+          <label for="settings-days">Number of Days</label>
+          <input type="number" id="settings-days" min="1" max="365">
+        </div>
+
+        <div class="form-group">
+          <label for="settings-start">Start Date</label>
+          <input type="date" id="settings-start">
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="settings-footer" checked>
+          <label for="settings-footer">Include link in exported images</label>
+        </div>
+
+        <button class="save-settings-btn" onclick="saveSettings()">Save Changes</button>
+        <button class="reset-btn" onclick="resetChallenge()">Reset All Data</button>
+      </div>
+    </div>
+
+    <!-- Export Container (hidden) -->
+    <div id="export-container" class="export-container">
+      <div class="export-title" id="export-title"></div>
+      <div class="export-progress" id="export-progress"></div>
+      <div class="export-streak" id="export-streak"></div>
+      <div class="month-grid" id="export-month-grid"></div>
+      <div class="export-footer" id="export-footer"></div>
+    </div>
+  </div>
+
+  <script>
+    // Data model
+    const STORAGE_KEY = 'challenge-tracker-data';
+    let data = {
+      name: '',
+      challengeName: '',
+      totalDays: 100,
+      startDate: '',
+      completedDays: [],
+      showExportFooter: true,
+      version: 1
+    };
+
+    // Current view state
+    let currentView = 'daily';
+    let selectedDayNumber = null; // For editing specific days
+    let returnToProgress = false; // Whether to return to progress view after confirm
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadData();
+      if (data.name && data.startDate) {
+        showMainApp();
+      } else {
+        showSetupScreen();
+      }
+    });
+
+    // Data persistence
+    function loadData() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          data = { ...data, ...JSON.parse(stored) };
+        }
+      } catch (e) {
+        console.error('Failed to load data:', e);
+      }
+    }
+
+    function saveData() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } catch (e) {
+        console.error('Failed to save data:', e);
+      }
+    }
+
+    // Date utilities
+    function parseDate(dateStr) {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function formatDateISO(date) {
+      return date.toISOString().split('T')[0];
+    }
+
+    function getDateForDay(dayNumber) {
+      const start = parseDate(data.startDate);
+      const date = new Date(start);
+      date.setDate(date.getDate() + dayNumber - 1);
+      return date;
+    }
+
+    function getDayNumber(date) {
+      const start = parseDate(data.startDate);
+      const diffTime = date.getTime() - start.getTime();
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays + 1;
+    }
+
+    function getTodaysDayNumber() {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return getDayNumber(today);
+    }
+
+    function formatDateDisplay(date) {
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function formatDateShort(date) {
+      return date.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric'
+      });
+    }
+
+    function getMonthName(date) {
+      return date.toLocaleDateString('en-US', { month: 'short' });
+    }
+
+    // Group days by month for display
+    function groupDaysByMonth() {
+      const months = [];
+      let currentMonth = null;
+      let currentMonthDays = [];
+
+      for (let day = 1; day <= data.totalDays; day++) {
+        const date = getDateForDay(day);
+        const monthKey = `${date.getFullYear()}-${date.getMonth()}`;
+
+        if (currentMonth !== monthKey) {
+          if (currentMonthDays.length > 0) {
+            months.push(currentMonthDays);
+          }
+          currentMonth = monthKey;
+          currentMonthDays = [];
+        }
+
+        currentMonthDays.push({
+          dayNumber: day,
+          date: date,
+          dayOfMonth: date.getDate()
+        });
+      }
+
+      if (currentMonthDays.length > 0) {
+        months.push(currentMonthDays);
+      }
+
+      return months;
+    }
+
+    // Check if a day is completed
+    function isDayCompleted(dayNumber) {
+      return data.completedDays.includes(dayNumber);
+    }
+
+    // Toggle day completion
+    function toggleDay(dayNumber) {
+      const index = data.completedDays.indexOf(dayNumber);
+      if (index > -1) {
+        data.completedDays.splice(index, 1);
+      } else {
+        data.completedDays.push(dayNumber);
+        data.completedDays.sort((a, b) => a - b);
+      }
+      saveData();
+    }
+
+    // Calculate current streak (consecutive days ending at today or most recent completed day)
+    function calculateStreak() {
+      if (data.completedDays.length === 0) return 0;
+
+      const todaysDayNumber = getTodaysDayNumber();
+      const sortedDays = [...data.completedDays].sort((a, b) => b - a); // Descending
+
+      // Find the starting point: today if completed, or most recent completed day
+      let checkDay;
+      if (sortedDays[0] === todaysDayNumber || sortedDays[0] === todaysDayNumber - 1) {
+        // Either today is completed, or yesterday was (streak still alive)
+        checkDay = sortedDays[0];
+      } else if (todaysDayNumber > 0 && sortedDays[0] < todaysDayNumber - 1) {
+        // Most recent completed day was more than 1 day ago - streak broken
+        return 0;
+      } else {
+        // Challenge hasn't started yet or other edge case
+        checkDay = sortedDays[0];
+      }
+
+      // Count consecutive days backwards
+      let streak = 0;
+      while (data.completedDays.includes(checkDay) && checkDay >= 1) {
+        streak++;
+        checkDay--;
+      }
+
+      return streak;
+    }
+
+    // Format streak text
+    function getStreakText() {
+      const streak = calculateStreak();
+      if (streak === 0) return '';
+      if (streak === 1) return '1 day streak!';
+      return `${streak} day streak!`;
+    }
+
+    // Setup screen
+    function showSetupScreen() {
+      document.getElementById('setup-screen').classList.remove('hidden');
+      document.getElementById('main-app').classList.add('hidden');
+
+      // Set default start date to today
+      const today = new Date();
+      document.getElementById('setup-start').value = formatDateISO(today);
+    }
+
+    function startChallenge() {
+      const name = document.getElementById('setup-name').value.trim();
+      const challenge = document.getElementById('setup-challenge').value.trim();
+      const days = parseInt(document.getElementById('setup-days').value) || 100;
+      const start = document.getElementById('setup-start').value;
+
+      if (!name || !challenge || !start) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      data.name = name;
+      data.challengeName = challenge;
+      data.totalDays = Math.max(1, Math.min(365, days));
+      data.startDate = start;
+      data.completedDays = [];
+      saveData();
+
+      showMainApp();
+    }
+
+    // Main app
+    function showMainApp() {
+      document.getElementById('setup-screen').classList.add('hidden');
+      document.getElementById('main-app').classList.remove('hidden');
+
+      updateHeader();
+      showDailyView();
+    }
+
+    function updateHeader() {
+      const title = `${data.name}'s ${data.totalDays} Day ${data.challengeName}`;
+      document.getElementById('app-title').textContent = title;
+
+      const completed = data.completedDays.length;
+      document.getElementById('progress-text').textContent =
+        `${completed} of ${data.totalDays} days completed`;
+    }
+
+    // Daily check-in view
+    function showDailyView(dayNumber = null) {
+      currentView = 'daily';
+      document.getElementById('daily-view').classList.remove('hidden');
+      document.getElementById('progress-view').classList.add('hidden');
+
+      const todaysDayNumber = getTodaysDayNumber();
+
+      // If no specific day requested, show today (or handle edge cases)
+      if (dayNumber === null) {
+        returnToProgress = false;
+        if (todaysDayNumber < 1) {
+          // Challenge hasn't started yet
+          selectedDayNumber = 1;
+        } else if (todaysDayNumber > data.totalDays) {
+          // Challenge has ended
+          selectedDayNumber = data.totalDays;
+        } else {
+          selectedDayNumber = todaysDayNumber;
+        }
+      } else {
+        returnToProgress = true;
+        selectedDayNumber = dayNumber;
+      }
+
+      const date = getDateForDay(selectedDayNumber);
+      const isToday = selectedDayNumber === todaysDayNumber;
+
+      // Update day info
+      let dayLabel = `Day ${selectedDayNumber} of ${data.totalDays}`;
+      if (todaysDayNumber < 1) {
+        const daysUntil = 1 - todaysDayNumber;
+        dayLabel = `Starts in ${daysUntil} day${daysUntil > 1 ? 's' : ''}`;
+      } else if (todaysDayNumber > data.totalDays) {
+        dayLabel = 'Challenge Complete!';
+      }
+
+      document.getElementById('daily-day-number').textContent = dayLabel;
+      document.getElementById('daily-day-date').textContent = formatDateDisplay(date);
+
+      // Update check button and streak
+      updateCheckButton();
+      updateStreakDisplay();
+    }
+
+    function updateCheckButton() {
+      const btn = document.getElementById('check-btn');
+      const icon = document.getElementById('check-icon');
+      const isCompleted = isDayCompleted(selectedDayNumber);
+
+      if (isCompleted) {
+        btn.classList.add('checked');
+        icon.textContent = '✓';
+      } else {
+        btn.classList.remove('checked');
+        icon.textContent = '';
+      }
+    }
+
+    function toggleCheck() {
+      toggleDay(selectedDayNumber);
+      updateCheckButton();
+      updateHeader();
+      updateStreakDisplay();
+
+      // If we came from progress view, go back after toggling
+      if (returnToProgress) {
+        showProgressView();
+      }
+    }
+
+    function updateStreakDisplay() {
+      const streakText = getStreakText();
+      document.getElementById('daily-streak').textContent = streakText;
+    }
+
+    // Progress view
+    function showProgressView() {
+      currentView = 'progress';
+      document.getElementById('daily-view').classList.add('hidden');
+      document.getElementById('progress-view').classList.remove('hidden');
+
+      renderMonthGrid();
+      updateProgressStats();
+      document.getElementById('progress-streak').textContent = getStreakText();
+    }
+
+    function renderMonthGrid(targetId = 'month-grid', forExport = false) {
+      const container = document.getElementById(targetId);
+      container.innerHTML = '';
+
+      const months = groupDaysByMonth();
+      const todaysDayNumber = getTodaysDayNumber();
+
+      months.forEach(monthDays => {
+        const column = document.createElement('div');
+        column.className = 'month-column';
+
+        // Month header
+        const header = document.createElement('div');
+        header.className = 'month-header';
+        header.textContent = getMonthName(monthDays[0].date);
+        column.appendChild(header);
+
+        // Day rows
+        monthDays.forEach(({ dayNumber, date, dayOfMonth }) => {
+          const row = document.createElement('div');
+          row.className = 'day-row';
+
+          const isPast = dayNumber < todaysDayNumber;
+          const isToday = dayNumber === todaysDayNumber;
+          const isFuture = dayNumber > todaysDayNumber;
+
+          if (isPast) row.classList.add('past');
+          if (isToday) row.classList.add('today');
+          if (isFuture) row.classList.add('future');
+
+          // Day number
+          const numSpan = document.createElement('span');
+          numSpan.className = 'day-num';
+          numSpan.textContent = dayOfMonth;
+          row.appendChild(numSpan);
+
+          // Checkmark if completed
+          if (isDayCompleted(dayNumber)) {
+            const check = document.createElement('span');
+            check.className = 'checkmark';
+            check.textContent = '✓';
+            row.appendChild(check);
+          }
+
+          // Click handler (only for past and today, not for export)
+          if (!forExport && !isFuture) {
+            row.onclick = () => showDailyView(dayNumber);
+          }
+
+          column.appendChild(row);
+        });
+
+        container.appendChild(column);
+      });
+    }
+
+    function updateProgressStats() {
+      const completed = data.completedDays.length;
+      const percent = Math.round((completed / data.totalDays) * 100);
+      document.getElementById('progress-stats').textContent =
+        `${completed} of ${data.totalDays} completed (${percent}%)`;
+    }
+
+    // Export image
+    async function exportImage() {
+      const container = document.getElementById('export-container');
+
+      // Set up export content
+      document.getElementById('export-title').textContent =
+        `${data.name}'s ${data.totalDays} Day ${data.challengeName}`;
+
+      const completed = data.completedDays.length;
+      const percent = Math.round((completed / data.totalDays) * 100);
+      document.getElementById('export-progress').textContent =
+        `${completed} of ${data.totalDays} completed (${percent}%)`;
+
+      // Streak
+      const streakText = getStreakText();
+      const streakEl = document.getElementById('export-streak');
+      streakEl.textContent = streakText;
+      streakEl.style.display = streakText ? 'block' : 'none';
+
+      // Render the month grid for export
+      renderMonthGrid('export-month-grid', true);
+
+      // Footer
+      const footer = document.getElementById('export-footer');
+      if (data.showExportFooter) {
+        footer.textContent = 'Track your own challenge at dalepike.github.io/100-day-challenge';
+        footer.style.display = 'block';
+      } else {
+        footer.style.display = 'none';
+      }
+
+      // Move container into view temporarily
+      container.style.left = '0';
+      container.style.position = 'fixed';
+      container.style.top = '0';
+      container.style.zIndex = '-1';
+
+      try {
+        const canvas = await html2canvas(container, {
+          backgroundColor: '#ffffff',
+          scale: 2
+        });
+
+        // Reset container position
+        container.style.left = '-9999px';
+        container.style.position = 'absolute';
+        container.style.top = '';
+        container.style.zIndex = '';
+
+        // Download
+        const link = document.createElement('a');
+        const safeName = data.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const safeChallenge = data.challengeName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        const today = formatDateISO(new Date());
+        link.download = `${safeChallenge}-${safeName}-${today}.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      } catch (e) {
+        console.error('Export failed:', e);
+        alert('Export failed. Please try again.');
+
+        // Reset container position on error
+        container.style.left = '-9999px';
+        container.style.position = 'absolute';
+        container.style.top = '';
+        container.style.zIndex = '';
+      }
+    }
+
+    // Settings
+    function openSettings() {
+      document.getElementById('settings-name').value = data.name;
+      document.getElementById('settings-challenge').value = data.challengeName;
+      document.getElementById('settings-days').value = data.totalDays;
+      document.getElementById('settings-start').value = data.startDate;
+      document.getElementById('settings-footer').checked = data.showExportFooter;
+
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function closeSettingsOnOverlay(event) {
+      if (event.target.id === 'settings-modal') {
+        closeSettings();
+      }
+    }
+
+    function saveSettings() {
+      const name = document.getElementById('settings-name').value.trim();
+      const challenge = document.getElementById('settings-challenge').value.trim();
+      const days = parseInt(document.getElementById('settings-days').value) || 100;
+      const start = document.getElementById('settings-start').value;
+      const footer = document.getElementById('settings-footer').checked;
+
+      if (!name || !challenge || !start) {
+        alert('Please fill in all required fields');
+        return;
+      }
+
+      data.name = name;
+      data.challengeName = challenge;
+      data.totalDays = Math.max(1, Math.min(365, days));
+      data.startDate = start;
+      data.showExportFooter = footer;
+
+      // Remove any completed days that are now out of range
+      data.completedDays = data.completedDays.filter(d => d <= data.totalDays);
+
+      saveData();
+      updateHeader();
+
+      if (currentView === 'progress') {
+        renderMonthGrid();
+        updateProgressStats();
+      } else {
+        showDailyView();
+      }
+
+      closeSettings();
+    }
+
+    function resetChallenge() {
+      if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        data = {
+          name: '',
+          challengeName: '',
+          totalDays: 100,
+          startDate: '',
+          completedDays: [],
+          showExportFooter: true,
+          version: 1
+        };
+        closeSettings();
+        showSetupScreen();
+      }
+    }
+  </script>
+</body>
+</html>
